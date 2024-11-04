@@ -1,0 +1,14 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(authService, "Authotization Service") {
+    Component(api, "User API", "Spring REST", "Управление учетными записями")
+    Component(authManager, "Authentication Manager", "Java Service", "Отвечает за аутентификацию пользователей")
+    Component(accessControl, "Access Control", "Java Service", "Управляет правами доступа пользователей")
+    ComponentDb(AuthDB, "User DB", "PostgreSQL", "Хранит данные пользователей и учетные записи")
+
+    Rel(api, authManager, "Запросы на регистрацию и аутентификацию")
+    Rel(authManager, accessControl, "Проверка прав доступа")
+    Rel(accessControl, AuthDB, "БД пользователей")
+}
+@enduml

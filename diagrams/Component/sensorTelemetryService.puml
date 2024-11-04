@@ -1,0 +1,21 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(sensorTelemetryService, "sensorTelemetryService component diagramm") {
+    Component(api, "Sensor Telemetry API", "Spring REST", "API для работы с телеметрией")
+    Component(telemetryRouter, "Telemetry Router", "Java Service", "Распределяет запросы в БД или в Кафку")
+    Component(telemetryReader, "Telemetry Reader", "Java Service", "Обрабатывает запросы получения телеметрии из БД")
+    Component(telemetryKafkaWriter, "telemetry Kafka Writer", "Java Service", "Записывает полученную телемитрию в Кафку")
+    Component(telemetryDBWriter, "telemetry DB Writer", "Java Service", "Разбирает топик кафки и записывает телеметрию в БД")
+    Container(Kafka, "Kafka", "Брокер сообщений для асинхронной записи телеметрии в БД")
+    ComponentDb(sensorControlDB, "Sensor Control DB", "PostgreSQL", "Хранит данные о настройках приборов")
+
+    Rel(api, telemetryRouter, "Запросы на получение и запись телеметрии")
+    Rel(telemetryRouter, telemetryReader, "Запросы на получение телеметрии")
+    Rel(telemetryRouter, telemetryKafkaWriter, "Запросы на запись телеметрии")
+    Rel(telemetryKafkaWriter, Kafka, "Запросы на запись телеметрии")
+    Rel(Kafka, telemetryDBWriter, "Запросы на запись телеметрии")
+    Rel(telemetryDBWriter, sensorControlDB, "Запись телеметрии в БД")
+    Rel(telemetryReader, sensorControlDB, "Чтение телеметрии из БД")
+}
+@enduml

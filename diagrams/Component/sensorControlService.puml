@@ -1,0 +1,14 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(sensorControlService, "sensorControlService component diagramm") {
+    Component(api, "Sensor Control API", "Spring REST", "API для работы с настройками приборов")
+    Component(commandHandler, "Command Handler", "Java Service", "Обрабатывает команды для управления приборов")
+    Component(stateManager, "State Manager", "Java Service", "Отслеживает текущее состояние приборов")
+    ComponentDb(sensorControlDB, "Sensor Control DB", "PostgreSQL", "Хранит данные о настройках приборов")
+
+    Rel(api, commandHandler, "Запросы на чтение и изменение настроек")
+    Rel(commandHandler, stateManager, "Передает изменения настроек")
+    Rel(stateManager, sensorControlDB, "Чтение и запись настроек")
+}
+@enduml

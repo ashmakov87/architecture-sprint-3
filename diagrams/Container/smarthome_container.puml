@@ -1,0 +1,47 @@
+@startuml
+title smart-home Container Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь", "Пользователи экосистемы smart-home")
+
+System_Boundary(smarthome, "Приложение Smart home") {
+    Container(apiGateway, "Api Gateway", "Аутентификация/авторизация, мартшрутизация запросов, балансировка и ограничение нагрузки")
+    Container(sensorControlService, "sensorControlService", "Обеспечивает управление приборами")
+    ComponentDb(sensorControlDB, "БД приборов и настроек", "PostgreSQL")
+    Container(sensorTelemetryService, "sensorTelemetryService", "Обеспечивает работу с телеметрией")
+    Container(authService, "authService", "Обеспечивает авторизацию и аутентификацию")
+    ComponentDb(AuthDB, "БД пользователей", "PostgreSQL")
+    ComponentDb(SensorTelemetryDB, "БД телеметрии приборов", "ElasticSearch")
+    Container(Kafka, "Kafka", "Брокер сообщений для асинхронной записи телеметрии в БД")
+   }
+
+System_Ext(smartsensor, "Прибор", "Домашние приборы подключенные к экосистеме smart-home")
+
+Rel(user, apiGateway, "Команды управления прибором")
+Rel(user, apiGateway, "Запрос телеметрии прибора")
+Rel(user, apiGateway, "Запрос актуальных настроек прибора")
+Rel(smartsensor, apiGateway, "Запрос актуальных настроек прибора")
+Rel(smartsensor, apiGateway, "Передача телеметрии прибора")
+
+Rel(apiGateway, authService, "Аутентификация и авторизация")
+Rel(authService, AuthDB, "Получение данных для авторизации/аутентификации")
+
+Rel(apiGateway, sensorControlService, "Команды управления прибором")
+Rel(apiGateway, sensorControlService, "Запрос актуальных настроек прибора")
+Rel(sensorControlService, sensorControlDB, "Чтение/запись настроек приборов")
+
+Rel(apiGateway, sensorTelemetryService, "Запрос телеметрии прибора")
+Rel(apiGateway, sensorTelemetryService, "Передача телеметрии прибора")
+Rel(sensorTelemetryService, Kafka, "Постановка/вычитка телеметрии из очереди на запись в БД")
+Rel(sensorTelemetryService, SensorTelemetryDB, "Чтение/запись телеметрии")
+
+
+
+
+
+
+
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(api_Gateway, "API Gateway") {
+    Component(apiGateway, "apiGateway", "Kong", "Аутентификация/авторизация, мартшрутизация запросов, балансировка и ограничение нагрузки")
+ 
+    Rel(apiGateway, sensorControlService, "Маршрутизация к sensorControlService")
+    Rel(apiGateway, sensorTelemetryService, "Маршрутизация к sensorTelemetryService")
+    Rel(apiGateway, authService, "Маршрутизация к authService")
+}
+@enduml

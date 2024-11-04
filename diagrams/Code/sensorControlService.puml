@@ -1,0 +1,28 @@
+@startuml
+class SensorControlAPI {
+    - sensorService : sensorService
+    + turnOnsensor(sensorId: Long) : void
+    + turnOffsensor(sensorId: Long) : void
+    + setTemperature(sensorId: Long, temperature: Double) : void
+}
+
+class sensorService {
+    - stateManager : StateManager
+    + executeCommand(command: sensorCommand) : void
+}
+
+class CommandHandler {
+    + handleCommand(command: sensorCommand) : void
+}
+
+class StateManager {
+    - sensorControlDB : sensorControlDB
+    + updatesensorState(sensorId: Long, newState: String) : void
+    + getsensorState(sensorId: Long) : String
+}
+
+SensorControlAPI --> sensorService
+sensorService --> CommandHandler
+CommandHandler --> StateManager
+StateManager --> sensorControlDB
+@enduml

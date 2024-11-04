@@ -1,85 +1,54 @@
-# Базовая настройка
+# Задание 1. Анализ и планирование (AS-IS)
+## Функционал монолитного приложения
+Приложение Smart home предоставляет следующие функции для пользователя:
 
-## Запуск minikube
+1. Включение и выключение отопления
+2. Запрос текущей температуры в доме
+3. Установка целевой температуры в доме
 
-[Инструкция по установке](https://minikube.sigs.k8s.io/docs/start/)
+## Анализ текущей реализации
 
+1. **Язык программирования**: Java
+2. **Фреймворк**: Spring Boot
+3. **База данных**: PostgreSQL
+4. **Архитектура**: Монолитная, все компоненты системы (обработка запросов, бизнес-логика, работа с данными) находятся в рамках одного приложения
+5. **Взаимодействие**: Синхронное, запросы обрабатываются последовательно. Ограничивает масштабируемость и отказоустойчивость
+6. **Масштабируемость**: Ограничена, так как монолит сложно масштабировать по частям
+7. **Развёртывание**: Требует остановки всего приложения
+8. **Обслуживание пользователей**: У пользователя нет возможности подкдючить новые датчики самостоятельно, требуется участие технического специалиста
+
+## Домены приложения
+
+1. Домен управления приборами
+2. Домен работы с телеметрией
+3. Домен управления пользователями
+
+## Диаграмма контекста
+
+Диаграмма расположена здесь:
 ```bash
-minikube start
+.\diagrams\Context\smart-home_context.puml
 ```
 
-## Добавление токена авторизации GitHub
-
-[Получение токена](https://github.com/settings/tokens/new)
-
+# Задание 2. Проектирование целевой архитектуры
+## C4 — Уровень контейнеров (Containers)
+Диаграмма расположена здесь:
 ```bash
-kubectl create secret docker-registry ghcr --docker-server=https://ghcr.io --docker-username=<github_username> --docker-password=<github_token> -n default
+.\diagrams\Container\smarthome_container.puml
 ```
-
-## Установка API GW kusk
-
-[Install Kusk CLI](https://docs.kusk.io/getting-started/install-kusk-cli)
-
+## C4 — Уровень компонентов (Components)
+Диаграммы расположены здесь:
 ```bash
-kusk cluster install
+.\diagrams\Component
 ```
-
-## Смена адреса образа в helm chart
-
-После того как вы сделали форк репозитория и у вас в репозитории отработал GitHub Action. Вам нужно получить адрес образа <https://github.com/><github_username>/architecture-sprint-3/pkgs/container/architecture-sprint-3
-
-Он выглядит таким образом
-```ghcr.io/<github_username>/architecture-sprint-3:latest```
-
-Замените адрес образа в файле `helm/smart-home-monolith/values.yaml` на полученный файл:
-
-```yaml
-image:
-  repository: ghcr.io/<github_username>/architecture-sprint-3
-  tag: latest
-```
-
-## Настройка terraform
-
-[Установите Terraform](https://yandex.cloud/ru/docs/tutorials/infrastructure-management/terraform-quickstart#install-terraform)
-
-Создайте файл ~/.terraformrc
-
-```hcl
-provider_installation {
-  network_mirror {
-    url = "https://terraform-mirror.yandexcloud.net/"
-    include = ["registry.terraform.io/*/*"]
-  }
-  direct {
-    exclude = ["registry.terraform.io/*/*"]
-  }
-}
-```
-
-## Применяем terraform конфигурацию
-
+## C4 — Уровень контейнеров (Containers)
+Диаграмма (пример) расположена здесь:
 ```bash
-cd terraform
-terraform init
-terraform apply
+.\diagrams\Code\sensorControlService
 ```
 
-## Настройка API GW
-
+# Задание 3. Разработка ER-диаграммы
+Диаграмма расположена здесь:
 ```bash
-kusk deploy -i api.yaml
-```
-
-## Проверяем работоспособность
-
-```bash
-kubectl port-forward svc/kusk-gateway-envoy-fleet -n kusk-system 8080:80
-curl localhost:8080/hello
-```
-
-## Delete minikube
-
-```bash
-minikube delete
+.\diagrams\er.puml
 ```
