@@ -52,3 +52,9 @@
 ```bash
 .\diagrams\er.puml
 ```
+
+# Задание 2.1. Создание и документирование API
+Описание API расположено здесь:
+```bash
+.\diagrams\swagger.yml
+```
