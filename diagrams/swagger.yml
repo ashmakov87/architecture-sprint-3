@@ -1,0 +1,197 @@
+openapi: 3.0.3
+info:
+  title: Smart home API
+  description: |-
+    Описание Api для взаимодействия с экосистемой Smart home 
+  version: 1.0.0
+servers:
+  - url: https://smarthome.ru
+tags:
+  - name: telemetry
+    description: Получение и отправка телеметрии
+  - name: command
+    description: Отправка команды на устройство
+  - name: deviceinfo
+    description: Получение информации об устройстве и актуальных настроек
+paths:
+  /sensor/{sensorid}/telemetry:
+    get:
+      tags:
+        - telemetry
+      summary: Получить телеметрию с датчика
+      description:  Возвращает данные телеметрии м датчика. За указанное в запросе время, либо самые последние
+      operationId: sensortelemetryget
+      parameters:
+        - name: sensorid
+          in: path
+          description: ID датчика
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+        required: false
+      responses:
+        '200':
+          description: Успешное получение телеметрии
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sensor_id:
+                    type: integer
+                  timestamp:
+                    type: string
+                    format: date-time
+                  parameter_code:
+                    type: string
+                  parameter_value:
+                    type: number
+        '403':
+          description: Нет прав на обращение к датчику
+        '404':
+          description: Устройство не найдено
+    post:
+      tags:
+        - telemetry
+      summary: Записать актуальную телеметрию с датчика
+      description:  Возвращает последние данные телеметрии м датчика
+      operationId: sensortelemetryget
+      parameters:
+        - name: sensorid
+          in: path
+          description: ID датчика
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+                parameter_code:
+                  type: string
+                parameter_value:
+                  type: number
+        required: true
+      responses:
+        '200':
+          description: Телеметрия успешно сохранена
+        '403':
+          description: Нет прав на обращение к датчику
+        '404':
+          description: Устройство не найдено
+  /device/{deviceid}/control:
+    post:
+      tags:
+        - command
+      summary: Отправить команду на устройство
+      operationId: devicecontrol
+      parameters:
+        - name: deviceid
+          in: path
+          description: ID устройства
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+                command_code:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: Команда успешно выполнена
+        '403':
+          description: Нет прав на обращение к устройству
+        '404':
+          description: Устройство не найдено
+  /device/{deviceid}/info:
+    post:
+      tags:
+        - deviceinfo
+      summary: Получение информации об устройстве и актуальных настроек 
+      operationId: deviceinfoget
+      parameters:
+        - name: deviceid
+          in: path
+          description: ID устройства
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение информации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  device_id:
+                    type: integer
+                  house_id:
+                    type: integer
+                  device_sn:
+                    type: string
+                  device_status:
+                    type: string
+                  device_installed_at:
+                    type: string
+                    format: date-time
+                  device_type_code:
+                    type: string
+                  device_model_name:
+                    type: string
+                  device_model_description:
+                    type: string
+                  sensors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/sensor_info'
+                    
+        '403':
+          description: Нет прав на обращение к устройству
+        '404':
+          description: Устройство не найдено
+components:
+  schemas:
+    sensor_parameter:
+      type: object
+      properties:
+        parameter_code:
+          type: string
+        parameter_value:
+          type: number
+    sensor_info:
+      type: object
+      properties:
+        sensor_id:
+          type: integer
+        sensor_name:
+          type: string
+        sensor_status:
+          type: string
+        sensor_parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/sensor_parameter'
+    

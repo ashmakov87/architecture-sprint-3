@@ -1,0 +1,86 @@
+@startuml
+
+entity User {
+    *id : int
+    --
+    username : string
+    email : string
+    password : string
+    role : string
+    created : datetime
+    subscription_due : datetime
+    is_active : bool
+}
+
+entity House {
+    *id : int
+    --
+    user_id : int
+    address : string
+    name : string
+    created : datetime
+    is_active : bool
+    is_main : bool
+}
+
+entity Device {
+    *id : int
+    --
+    model_id : int
+    house_id : int
+    serial_number : string
+    status : string
+    installed_at : datetime
+}
+
+entity DeviceModel {
+    *id : int
+    --
+    device_type_code : int
+    name : string
+    description : string
+
+}
+
+entity DeviceType {
+    *device_type_code : int
+    --
+    name : string
+    description : string
+    is_active : bool
+}
+
+entity Sensor {
+    *id : int
+    --
+    sensor_id : int
+    name : string
+    status : string
+}
+
+entity TelemetryData {
+    *id : int
+    --
+    sensor_id : int
+    timestamp : datetime
+    parameter_code : string
+    parameter_value : float
+}
+
+entity SensorSettings {
+    *id : int
+    --
+    sensor_id : int
+    parameter_code : string
+    parameter_value : float
+}
+
+User ||--o{ House : "владеет"
+House ||--o{ Device : "содержит"
+Device }o--|| DeviceModel : "принадлежит"
+DeviceModel }o--|| DeviceType : "принадлежит"
+Device ||--o{ Sensor : "включает"
+Sensor ||--o{ TelemetryData : "генерирует"
+Sensor ||--o{ SensorSettings : "использует"
+
+@enduml

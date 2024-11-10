@@ -1,0 +1,19 @@
+@startuml
+title smart-home Context Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь", "Пользователь экосистемы smart-home")
+System(smarthome, "Приложение smart-home", "Управление приборами, подключенными к экосистеме smart-home")
+
+System_Ext(smartsensor, "Прибор", "Домашние приборы подключенные к экосистеме smart-home")
+
+Rel(user, smarthome, "Команды управления прибором")
+Rel(user, smarthome, "Запрос телеметрии прибора")
+Rel(user, smarthome, "Запрос актуальных настроек прибора")
+Rel(smartsensor, smarthome, "Запрос актуальных настроек прибора")
+Rel(smartsensor, smarthome, "Передача телеметрии")
+
+@enduml
